@@ -25,6 +25,10 @@ LOG_MODULE_DECLARE(zmk, CONFIG_ZMK_LOG_LEVEL);
 
 
 LV_IMG_DECLARE(rickroll);
+LV_IMG_DECLARE(tante);
+LV_IMG_DECLARE(leberkassemmerl);
+LV_IMG_DECLARE(apple_aa);
+LV_IMG_DECLARE(juli);
 
 static sys_slist_t widgets = SYS_SLIST_STATIC_INIT(&widgets);
 
@@ -124,9 +128,13 @@ int zmk_widget_status_init(struct zmk_widget_status *widget, lv_obj_t *parent)
     lv_canvas_set_buffer(top, widget->cbuf, CANVAS_SIZE, CANVAS_SIZE, LV_IMG_CF_TRUE_COLOR);
 
     lv_obj_t *art = lv_img_create(widget->obj);
-    bool random = sys_rand32_get() & 1;
-    // lv_img_set_src(art, random ? &balloon : &mountain);
-    lv_img_set_src(art, &rickroll);
+
+    int random = sys_rand32_get() & 7;
+    lv_img_set_src(art, random == 0 ? &tante :
+                        random == 1 ? &leberkassemmerl : 
+                        random == 2 ? &juli : 
+                        random == 3 ? &apple_aa : &rickroll);
+    // lv_img_set_src(art, &rickroll);
 
 
     lv_obj_align(art, LV_ALIGN_TOP_LEFT, 0, 0);
