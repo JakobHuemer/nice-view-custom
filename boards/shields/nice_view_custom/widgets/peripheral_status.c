@@ -30,6 +30,43 @@ LV_IMG_DECLARE(leberkassemmerl);
 LV_IMG_DECLARE(apple_aa);
 LV_IMG_DECLARE(juli);
 
+const lv_img_dsc_t *sliedshow_images[] = {
+    &rickroll,
+    &rickroll,
+    &rickroll,
+    &tante,
+    &leberkassemmerl,
+    &leberkassemmerl,
+    &apple_aa,
+    &apple_aa,
+    &apple_aa,
+    &juli,
+};
+
+/* arrange the N elements of ARRAY in random order.
+ * Only effective if N is much smaller than RAND_MAX;
+ * if this may not be the case, use a better random
+ * number generator. */
+static void shuffle(void *array, size_t n, size_t size) {
+    char tmp[size];
+    char *arr = array;
+    size_t stride = size * sizeof(char);
+
+    if (n > 1) {
+        size_t i;
+        for (i = 0; i < n - 1; ++i) {
+            uint32_t random_val = sys_rand32_get();
+            // Since sys_rand32_get() gives us a uint32_t (0 to 4294967295),
+            // we need to scale it to our range (i to n-1)
+            size_t j = i + (random_val % (n - i));
+
+            memcpy(tmp, arr + j * stride, size);
+            memcpy(arr + j * stride, arr + i * stride, size);
+            memcpy(arr + i * stride, tmp, size);
+        }
+    }
+}
+
 static sys_slist_t widgets = SYS_SLIST_STATIC_INIT(&widgets);
 
 struct peripheral_status_state
@@ -127,14 +164,28 @@ int zmk_widget_status_init(struct zmk_widget_status *widget, lv_obj_t *parent)
     lv_obj_align(top, LV_ALIGN_TOP_RIGHT, 0, 0);
     lv_canvas_set_buffer(top, widget->cbuf, CANVAS_SIZE, CANVAS_SIZE, LV_IMG_CF_TRUE_COLOR);
 
-    lv_obj_t *art = lv_img_create(widget->obj);
-
-    int random = sys_rand32_get() & 7;
-    lv_img_set_src(art, random == 0 ? &tante :
-                        random == 1 ? &leberkassemmerl : 
-                        random == 2 ? &juli : 
-                        random == 3 ? &apple_aa : &rickroll);
+    // single images
+    // int random = sys_rand32_get() & 7;
+    // lv_img_set_src(art, random == 0 ? &tante :
+    //                     random == 1 ? &leberkassemmerl : 
+    //                     random == 2 ? &juli : 
+    //                     random == 3 ? &apple_aa : &rickroll);
     // lv_img_set_src(art, &rickroll);
+
+
+    int time_per_frame = 2000 * 60;
+    int array_length = sizeof(sliedshow_images) / sizeof(sliedshow_images[0]);
+    int display_time = array_length * time_per_frame;
+
+    shuffle(sliedshow_images, array_length, sizeof(sliedshow_images[0]));
+
+    // animation
+    lv_obj_t * art = lv_animimg_create(widget->obj);            //<--
+    lv_obj_center(art);                                         //<--
+    lv_animimg_set_src(art, (const void **) sliedshow_images, array_length);     //<--
+    lv_animimg_set_duration(art, display_time);                         //<--
+    lv_animimg_set_repeat_count(art, LV_ANIM_REPEAT_INFINITE);  //<--
+    lv_animimg_start(art);                                      //<--
 
 
     lv_obj_align(art, LV_ALIGN_TOP_LEFT, 0, 0);
@@ -148,3 +199,4 @@ int zmk_widget_status_init(struct zmk_widget_status *widget, lv_obj_t *parent)
 }
 
 lv_obj_t *zmk_widget_status_obj(struct zmk_widget_status *widget) { return widget->obj; }
+
