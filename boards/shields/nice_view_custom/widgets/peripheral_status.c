@@ -28,19 +28,23 @@ LV_IMG_DECLARE(rickroll);
 LV_IMG_DECLARE(tante);
 LV_IMG_DECLARE(leberkassemmerl);
 LV_IMG_DECLARE(apple_aa);
-LV_IMG_DECLARE(juli);
+LV_IMG_DECLARE(creeper);
+LV_IMG_DECLARE(c_creeper);
 
 const lv_img_dsc_t *sliedshow_images[] = {
     &rickroll,
     &rickroll,
     &rickroll,
+    &creeper,
+    &creeper,
+    &creeper,
+    &c_creeper,
     &tante,
     &leberkassemmerl,
     &leberkassemmerl,
     &apple_aa,
     &apple_aa,
     &apple_aa,
-    &juli,
 };
 
 /* arrange the N elements of ARRAY in random order.
